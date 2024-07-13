@@ -2,6 +2,7 @@ FROM alpine:latest
 RUN apk add --no-cache php81 php81-fpm nginx
 COPY nginx.conf /etc/nginx/nginx.conf
 COPY chat /var/www/html/
+COPY . /var/www/html/
 RUN sed -i 's/;cgi.fix_pathinfo=1/cgi.fix_pathinfo=0/' /etc/php81/php.ini
 WORKDIR /var/www/html
 CMD ["sh", "-c", "nginx && php-fpm81 -F"]
