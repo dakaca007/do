@@ -5,8 +5,9 @@ COPY chat /var/www/html/
 COPY Dockerfile /var/www/html/
 RUN sed -i 's/;cgi.fix_pathinfo=1/cgi.fix_pathinfo=0/' /etc/php81/php.ini
 WORKDIR /var/www/html
-CMD ["sh", "-c", "nginx && php-fpm81 -F"]
 EXPOSE 80
+CMD ["sh", "-c", "nginx && php-fpm81 -F"]
+
 
 
 #如果需要定义版本号取消注释，并在构建过程中定义
