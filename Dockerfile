@@ -31,10 +31,9 @@ RUN mkdir -p /var/www/html/php \
 COPY ./myphp /var/www/html/php
 COPY nginx.conf /etc/nginx/sites-available/default
 COPY start.sh /start.sh
-RUN chown appuser:appuser /start.sh && chmod +x /start.sh
 
-# 设置用户并暴露端口
-USER appuser
+
+
 EXPOSE 80
 
 # 启动服务
