@@ -16,10 +16,7 @@ RUN mkdir -p /var/log/nginx /var/lib/nginx /var/www/html/php /run/php /var/www/u
     && chown -R www-data:www-data /var/log/nginx /var/lib/nginx /var/www /run/php \
     && chmod 755 /var/log/nginx /var/lib/nginx
 
-# 安装 GoTTY
-RUN curl -sL https://github.com/yudai/gotty/releases/download/v1.0.1/gotty_linux_amd64.tar.gz | tar xz \
-    && mv gotty /usr/local/bin/ \
-    && chmod +x /usr/local/bin/gotty
+ 
 
 # 创建 PHP 测试文件
 RUN mkdir -p /var/www/html/php \
@@ -28,12 +25,7 @@ RUN mkdir -p /var/www/html/php \
     && chown -R www-data:www-data /var/www/html/php \
     && chmod 755 /var/www/html/php/*.php
 
-# 创建非 root 用户并生成证书
-RUN useradd -m appuser \
-    && openssl req -x509 -newkey ec:<(openssl ecparam -name prime256v1) \
-        -nodes -days 365 -subj "/CN=localhost" \
-        -keyout /home/appuser/.gotty.key -out /home/appuser/.gotty.crt \
-    && chown appuser:appuser /home/appuser/.gotty.*
+ 
 
 # 复制配置文件和启动脚本
 COPY ./myphp /var/www/html/php

@@ -5,8 +5,7 @@ export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
 service php8.1-fpm start
  
  
-# 以appuser用户启动GoTTY
-su - root -c "gotty --permit-write --port 3000 bash" &
+ 
 
 # 前台运行Nginx
 nginx -g "daemon off;"
