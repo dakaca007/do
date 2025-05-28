@@ -26,6 +26,8 @@ $posts = $stmt->fetchAll();
             <nav>
                 <?php if (is_logged_in()): ?>
                     <a href="dashboard.php">仪表盘</a>
+                    <a href="profile.php">个人中心</a>
+                    <a href="add_category.php">分类管理</a>
                     <a href="logout.php">退出</a>
                 <?php else: ?>
                     <a href="login.php">登录</a>
