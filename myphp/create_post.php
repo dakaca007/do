@@ -55,6 +55,29 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     <textarea name="content" id="content" rows="10" required></textarea>
                 </div>
                 <button type="submit">发布</button>
+                // 修改 create_post.php 和 edit_post.php 中的表单部分
+// 添加分类选择器
+$stmt = $pdo->query("SELECT * FROM categories");
+$categories = $stmt->fetchAll();
+
+$selected = [];
+if ($is_edit) {
+    $stmt = $pdo->prepare("SELECT category_id FROM post_categories WHERE post_id = ?");
+    $stmt->execute([$post_id]);
+    $selected = array_column($stmt->fetchAll(), 'category_id');
+}
+
+// 在表单中添加
+<div class="form-group">
+    <label>选择分类:</label><br>
+    <?php foreach ($categories as $category): ?>
+        <label>
+            <input type="checkbox" name="categories[]" value="<?= $category['id'] ?>" 
+                <?= in_array($category['id'], $selected) ? 'checked' : '' ?>>
+            <?= htmlspecialchars($category['name']) ?>
+        </label><br>
+    <?php endforeach; ?>
+</div>
             </form>
         </main>
     </div>

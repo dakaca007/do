@@ -157,9 +157,20 @@ td {
     border: 1px solid #ddd;
 }
 
-@media (max-width: 600px) {
-    .container {
-        width: 100%;
-        padding: 10px;
+/* 添加移动端优化样式 */
+@media (max-width: 768px) {
+    .comment-form textarea {
+        height: 80px;
+    }
+    
+    .post-content img {
+        max-width: 100%;
+        height: auto;
+    }
+    
+    .avatar {
+        width: 60px;
+        height: 60px;
+        font-size: 1.5em;
     }
 }
