@@ -1,14 +1,29 @@
 FROM ubuntu:22.04
 
-# 安装基础依赖
+# 使用阿里云镜像源
+RUN sed -i 's/archive.ubuntu.com/mirrors.aliyun.com/g' /etc/apt/sources.list && \
+    sed -i 's/security.ubuntu.com/mirrors.aliyun.com/g' /etc/apt/sources.list
+
+# 安装依赖
 RUN apt update && DEBIAN_FRONTEND=noninteractive apt install -y \
-    curl \
-    bash \
-    procps \
-    ncurses-bin \
-    openssl \
-    nginx \
-    vim \
+    software-properties-common \
+    ca-certificates \
+    && apt-add-repository -y universe \
+    && apt update \
+    && DEBIAN_FRONTEND=noninteractive apt install -y \
+        curl \
+        bash \
+        procps \
+        ncurses-bin \
+        openssl \
+        nginx \
+        vim \
+        libldap-2.5-0 \
+        libbrotli1 \
+        libpsl5 \
+        librtmp1 \
+        libgpm2 \
+        libsodium23 \
     && rm -rf /var/lib/apt/lists/*
 
  # 配置Nginx目录权限（关键步骤）
