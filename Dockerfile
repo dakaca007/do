@@ -1,66 +1,28 @@
+# Dockerfile
 FROM ubuntu:22.04
 
-# 使用阿里云镜像源
-RUN sed -i 's/archive.ubuntu.com/mirrors.aliyun.com/g' /etc/apt/sources.list && \
-    sed -i 's/security.ubuntu.com/mirrors.aliyun.com/g' /etc/apt/sources.list
+RUN apt update && apt install -y \
+    firefox \
+    x11vnc \
+    xvfb \
+    fluxbox \
+    novnc \
+    websockify \
+    net-tools
 
-# 安装依赖
-RUN apt update && DEBIAN_FRONTEND=noninteractive apt install -y \
-    software-properties-common \
-    ca-certificates \
-    && apt-add-repository -y universe \
-    && apt update \
-    && DEBIAN_FRONTEND=noninteractive apt install -y \
-        curl \
-        bash \
-        procps \
-        ncurses-bin \
-        openssl \
-        nginx \
-        vim \
-        libldap-2.5-0 \
-        libbrotli1 \
-        libpsl5 \
-        librtmp1 \
-        libgpm2 \
-        libsodium23 \
-    && rm -rf /var/lib/apt/lists/*
+# 创建用户
+RUN useradd -m -s /bin/bash remoteuser && \
+    echo 'remoteuser:password123' | chpasswd
 
- # 配置Nginx目录权限（关键步骤）
-RUN mkdir -p /var/log/nginx /var/lib/nginx /var/www/html/php \
-    && chown -R www-data:www-data /var/log/nginx /var/lib/nginx /var/www/html \
-    && chmod 755 /var/log/nginx /var/lib/nginx
+# 配置 VNC 和 noVNC
+RUN mkdir -p /home/remoteuser/.vnc && \
+    x11vnc -storepasswd "vncpassword" /home/remoteuser/.vnc/passwd
 
-# 安装指定版本 PHP-FPM
-RUN apt update && DEBIAN_FRONTEND=noninteractive apt install -y \
-    php8.1-fpm \  
-    php8.1-mysql \
-    php8.1-odbc \
-    php8.1-pdo \
-    && rm -rf /var/lib/apt/lists/*
-WORKDIR /var/www/html/php
-# 创建 PHP-FPM 运行时目录
-RUN mkdir -p /run/php && chown www-data:www-data /run/php
-# 创建 PHP 测试文件和目录（添加 index.php）
-RUN mkdir -p /var/www/html/php \
-    && echo "<?php phpinfo(); ?>" > /var/www/html/php/info.php \
-    && echo "<?php echo 'Hello from PHP test!'; ?>" > /var/www/html/php/test.php \
-    && chown -R www-data:www-data /var/www/html/php \
-    && chmod 755 /var/www/html/php/*.php
-COPY ./myphp /var/www/html/php
- 
-
-# 复制Nginx配置文件
-COPY nginx.conf /etc/nginx/sites-available/default
-
-
-# 复制启动脚本并设置权限（在切换用户前完成）
 COPY start.sh /start.sh
 RUN chmod +x /start.sh
-USER root
 
-# 暴露端口
-EXPOSE 80
+USER remoteuser
+WORKDIR /home/remoteuser
 
-# 启动服务
+EXPOSE 6080
 CMD ["/start.sh"]
