@@ -1,22 +1,33 @@
-# Dockerfile
+# 修改后的 Dockerfile
 FROM ubuntu:22.04
 
-RUN apt update && apt install -y \
+# 设置非交互式环境变量和时区（关键修复）
+ENV DEBIAN_FRONTEND=noninteractive \
+    TZ=Asia/Shanghai
+
+# 预配置时区（避免交互式提示）
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && \
+    echo $TZ > /etc/timezone
+
+# 安装依赖（添加 --no-install-recommends 减少体积）
+RUN apt update && apt install -y --no-install-recommends \
     firefox \
     x11vnc \
     xvfb \
     fluxbox \
     novnc \
     websockify \
-    net-tools
+    net-tools \
+    tzdata \
+    && rm -rf /var/lib/apt/lists/*  # 清理缓存减小镜像
 
-# 创建用户
+# 创建用户（密码建议改为更安全的）
 RUN useradd -m -s /bin/bash remoteuser && \
-    echo 'remoteuser:password123' | chpasswd
+    echo 'remoteuser:admin123' | chpasswd
 
-# 配置 VNC 和 noVNC
+# 配置 VNC 密码
 RUN mkdir -p /home/remoteuser/.vnc && \
-    x11vnc -storepasswd "vncpassword" /home/remoteuser/.vnc/passwd
+    x11vnc -storepasswd "admin123" /home/remoteuser/.vnc/passwd
 
 COPY start.sh /start.sh
 RUN chmod +x /start.sh
