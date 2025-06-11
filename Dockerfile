@@ -8,16 +8,9 @@ ENV DEBIAN_FRONTEND=noninteractive \
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && \
     echo $TZ > /etc/timezone
 
-# 修复 Firefox 安装问题
-RUN apt update && \
-    apt install -y --no-install-recommends \
-    software-properties-common && \
-    add-apt-repository -y ppa:mozillateam/ppa && \
-    echo 'Package: firefox*' > /etc/apt/preferences.d/mozilla-firefox && \
-    echo 'Pin: release o=LP-PPA-mozillateam' >> /etc/apt/preferences.d/mozilla-firefox && \
-    echo 'Pin-Priority: 501' >> /etc/apt/preferences.d/mozilla-firefox && \
-    apt install -y --no-install-recommends \
-    firefox \
+# 安装依赖（使用firefox-esr替代firefox）
+RUN apt update && apt install -y --no-install-recommends \
+    firefox-esr \
     x11vnc \
     xvfb \
     fluxbox \
@@ -27,16 +20,17 @@ RUN apt update && \
     tzdata \
     && rm -rf /var/lib/apt/lists/*
 
-# 创建用户（密码建议改为更安全的）
+# 创建用户
 RUN useradd -m -s /bin/bash remoteuser && \
     echo 'remoteuser:admin123' | chpasswd
 
-# 修复密码文件权限
+# 配置 VNC 密码（注意：使用 remoteuser 用户运行 storepasswd 以避免权限问题）
 RUN mkdir -p /home/remoteuser/.vnc && \
-    x11vnc -storepasswd "admin123" /home/remoteuser/.vnc/passwd && \
     chown -R remoteuser:remoteuser /home/remoteuser/.vnc && \
-    chmod 600 /home/remoteuser/.vnc/passwd
+    # 使用 su 以 remoteuser 身份运行 storepasswd，避免权限问题
+    su - remoteuser -c "x11vnc -storepasswd admin123 /home/remoteuser/.vnc/passwd"
 
+# 复制启动脚本并设置权限
 COPY start.sh /start.sh
 RUN chmod +x /start.sh
 
