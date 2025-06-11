@@ -1,16 +1,22 @@
-# 修改后的 Dockerfile
 FROM ubuntu:22.04
 
-# 设置非交互式环境变量和时区（关键修复）
+# 设置非交互式环境
 ENV DEBIAN_FRONTEND=noninteractive \
     TZ=Asia/Shanghai
 
-# 预配置时区（避免交互式提示）
+# 预配置时区
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && \
     echo $TZ > /etc/timezone
 
-# 安装依赖（添加 --no-install-recommends 减少体积）
-RUN apt update && apt install -y --no-install-recommends \
+# 修复 Firefox 安装问题
+RUN apt update && \
+    apt install -y --no-install-recommends \
+    software-properties-common && \
+    add-apt-repository -y ppa:mozillateam/ppa && \
+    echo 'Package: firefox*' > /etc/apt/preferences.d/mozilla-firefox && \
+    echo 'Pin: release o=LP-PPA-mozillateam' >> /etc/apt/preferences.d/mozilla-firefox && \
+    echo 'Pin-Priority: 501' >> /etc/apt/preferences.d/mozilla-firefox && \
+    apt install -y --no-install-recommends \
     firefox \
     x11vnc \
     xvfb \
@@ -19,7 +25,7 @@ RUN apt update && apt install -y --no-install-recommends \
     websockify \
     net-tools \
     tzdata \
-    && rm -rf /var/lib/apt/lists/*  # 清理缓存减小镜像
+    && rm -rf /var/lib/apt/lists/*
 
 # 创建用户（密码建议改为更安全的）
 RUN useradd -m -s /bin/bash remoteuser && \
