@@ -16,5 +16,13 @@ done
 # 启动窗口管理器
 fluxbox -log /dev/null &
 
-# 启动 Firefox（使用 firefox-esr）
-firefox-esr --no-remote --disable-gpu --disable-dev
+# 启动 Firefox（使用 ESR 版本）Add commentMore actions
+firefox --no-remote --disable-gpu --disable-dev-shm-usage --disable-setuid-sandbox --disable-infobars about:blank &
+
+# 修复 VNC 密码读取问题
+sleep 3
+x11vnc -storepasswd admin123 ~/.vnc/passwd  # 确保密码文件存在
+x11vnc -forever -shared -passwd admin123 -display :0 -noxrecord -noxfixes -noxdamage &
+
+# 启动 noVNC（前台运行）
+websockify --web /usr/share/novnc 6080 localhost:5900
