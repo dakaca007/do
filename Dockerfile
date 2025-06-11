@@ -12,6 +12,7 @@ RUN apt-get update && apt-get install -y wget && \
 
 # 更新系统和安装所需软件
 RUN apt-get update && apt-get upgrade -y && \
+    apt-get install -y php php-cli php-curl php-mbstring php-xml php-zip && \
     apt-get install -y wget && \
     wget https://golang.org/dl/go1.20.6.linux-amd64.tar.gz && \
     tar -C /usr/local -xzf go1.20.6.linux-amd64.tar.gz && \
@@ -55,14 +56,6 @@ RUN curl -LO https://github.com/yudai/gotty/releases/download/v1.0.1/gotty_linux
     && mv gotty /usr/local/bin/ \
     && chmod +x /usr/local/bin/gotty \
     && rm gotty_linux_amd64.tar.gz
-
-# 安装PHP-FPM及相关扩展
-RUN apt update && DEBIAN_FRONTEND=noninteractive apt install -y \
-    php8.1-fpm \
-    php8.1-mysql \
-    php8.1-odbc \
-    php8.1-pdo \
-    && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /var/www/html/php
 RUN mkdir -p /var/www/uploads
