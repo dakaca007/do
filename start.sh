@@ -16,17 +16,13 @@ done
 # 启动窗口管理器
 fluxbox -log /dev/null &
 
-# 启动 Firefox（优化性能）
+# 启动 Firefox（使用 ESR 版本）
 firefox --no-remote --disable-gpu --disable-dev-shm-usage --disable-setuid-sandbox --disable-infobars about:blank &
 
-# 启动 VNC 服务器（关键修复）
-x11vnc -forever -shared -passwd "$(cat /home/remoteuser/.vnc/passwd)" -display :0 -noxrecord -noxfixes -noxdamage -localhost -rfbport 5900 &
-
-# 确保 VNC 服务器启动
+# 修复 VNC 密码读取问题
 sleep 3
+x11vnc -storepasswd admin123 ~/.vnc/passwd  # 确保密码文件存在
+x11vnc -forever -shared -passwd admin123 -display :0 -noxrecord -noxfixes -noxdamage &
 
-# 检查 VNC 端口是否监听
-netstat -tulpn | grep 5900 || echo "警告：VNC 端口未监听"
-
-# 启动 noVNC（前台运行保持容器存活）
+# 启动 noVNC（前台运行）
 websockify --web /usr/share/novnc 6080 localhost:5900
