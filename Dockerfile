@@ -73,23 +73,10 @@ RUN echo "<?php phpinfo(); ?>" > /var/www/html/php/info.php \
     && echo "<?php echo 'Hello from PHP test!'; ?>" > /var/www/html/php/test.php \
     && chown -R www-data:www-data /var/www/html/php \
     && chmod 755 /var/www/html/php/*.php
-COPY ./myphp /var/www/html/php
+
 
 # 配置Nginx
 COPY nginx.conf /etc/nginx/sites-available/default
-
-# 使用阿里云PyPI镜像安装Python依赖
-COPY ./flaskapp/requirements.txt /tmp/requirements.txt
-RUN python3 -m pip install --no-cache-dir -r /tmp/requirements.txt \
-    -i https://mirrors.aliyun.com/pypi/simple/ \
-    --trusted-host mirrors.aliyun.com \
-    && rm /tmp/requirements.txt
-
-# 部署Flask应用
-COPY ./flaskapp /var/www/html/flaskapp
-RUN mkdir -p /var/www/html/flaskapp/static/uploads \
-    && chown -R www-data:www-data /var/www/html/flaskapp/static \
-    && chmod 755 /var/www/html/flaskapp
 
 # 配置非root用户
 RUN useradd -m appuser \
