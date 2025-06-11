@@ -25,9 +25,11 @@ RUN apt update && apt install -y --no-install-recommends \
 RUN useradd -m -s /bin/bash remoteuser && \
     echo 'remoteuser:admin123' | chpasswd
 
-# 配置 VNC 密码
+# 修复密码文件权限
 RUN mkdir -p /home/remoteuser/.vnc && \
-    x11vnc -storepasswd "admin123" /home/remoteuser/.vnc/passwd
+    x11vnc -storepasswd "admin123" /home/remoteuser/.vnc/passwd && \
+    chown -R remoteuser:remoteuser /home/remoteuser/.vnc && \
+    chmod 600 /home/remoteuser/.vnc/passwd
 
 COPY start.sh /start.sh
 RUN chmod +x /start.sh
