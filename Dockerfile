@@ -14,17 +14,9 @@ RUN apt-get update && apt-get install -y wget && \
 RUN apt-get update && apt-get upgrade -y && \
     apt-get install -y php php-fpm php-cli php-curl php-mbstring php-xml php-zip && \
     apt-get install -y wget && \
-    wget https://golang.org/dl/go1.20.6.linux-amd64.tar.gz && \
-    tar -C /usr/local -xzf go1.20.6.linux-amd64.tar.gz && \
-    rm go1.20.6.linux-amd64.tar.gz && \
-    echo "export PATH=\$PATH:/usr/local/go/bin" >> /etc/profile && \
-    echo "export GOPATH=/root/go" >> /etc/profile && \
-    echo "export PATH=\$PATH:\$GOPATH/bin" >> /etc/profile && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# 设置环境变量（确保 Go 可用）
-ENV PATH="/usr/local/go/bin:$PATH"
-ENV GOPATH="/root/go"
+
 
 # 安装一些常用开发工具（可选）
 RUN apt-get update && apt-get install -y git build-essential
