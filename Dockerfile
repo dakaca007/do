@@ -12,7 +12,7 @@ RUN apt-get update && apt-get install -y wget && \
 
 # 更新系统和安装所需软件
 RUN apt-get update && apt-get upgrade -y && \
-    apt-get install -y php php-cli php-curl php-mbstring php-xml php-zip && \
+    apt-get install -y php php-fpm php-cli php-curl php-mbstring php-xml php-zip && \
     apt-get install -y wget && \
     wget https://golang.org/dl/go1.20.6.linux-amd64.tar.gz && \
     tar -C /usr/local -xzf go1.20.6.linux-amd64.tar.gz && \
